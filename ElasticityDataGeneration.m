@@ -1,3 +1,4 @@
+
 %Geometry
 %%Square
 ng = 90; %number of geometries
@@ -13,6 +14,8 @@ x4 = x3*cos(alpha) - y3*sin(alpha); y4 = x3*sin(alpha) + y3*cos(alpha);
 min_points = 10000; %Gross Points
 L_out = 1.0; %1;
 
+bc = @(location,~) (sqrt(location.x*location.x + location.y*location.y) > 0.75*L_out);
+    
 for i=1:ng
     theta = i*pi/180.0;
     x1r = x1*cos(theta) - y1*sin(theta);
@@ -31,15 +34,15 @@ for i=1:ng
     %thermal model
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
-    pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',1);                   
+    %pdegplot(thermalmodel,'EdgeLabels','on');
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);                   
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -80,9 +83,10 @@ for i=1:ng
         aaa = size(x_coord);
         min_points = aaa(1);
     end
-    %figure
-    %pdeplot(structuralmodel,"XYData",v,"Contour","on","ColorMap","hot");
-    %title 'v displacement';
+    figure
+    hold on
+    pdeplot(structuralmodel,"XYData",T,"Contour","on","ColorMap","hot");
+    title 'T displacement';
 
     %writing the results
     id = fopen(name+'T'+string(i)+'.txt','w');
@@ -147,13 +151,13 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',1);                   
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);                   
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -268,16 +272,16 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',9,'Temperature',1); 
-    thermalBC(thermalmodel,'Edge',10,'Temperature',0); 
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',9,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',10,'Temperature',bc); 
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -392,15 +396,15 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',9,'Temperature',1); 
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',9,'Temperature',bc); 
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -520,17 +524,17 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',9,'Temperature',1); 
-    thermalBC(thermalmodel,'Edge',10,'Temperature',0); 
-    thermalBC(thermalmodel,'Edge',11,'Temperature',0); 
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',9,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',10,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',11,'Temperature',bc); 
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -657,18 +661,18 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',9,'Temperature',0); 
-    thermalBC(thermalmodel,'Edge',10,'Temperature',0); 
-    thermalBC(thermalmodel,'Edge',11,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',12,'Temperature',1);
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',9,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',10,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',11,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',12,'Temperature',bc);
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
     %mesh = generateMesh(thermalmodel,'Hmax',0.105);
@@ -753,7 +757,6 @@ display(min_points);
 
 %%%%
 
-
 %%Nanogan
 ng = 40; %number of geometries
 name = "nanogan";
@@ -801,19 +804,19 @@ for i=1:ng
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
     pdegplot(thermalmodel,'EdgeLabels','on');
-    thermalBC(thermalmodel,'Edge',1,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',2,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',3,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',4,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',5,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',6,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',7,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',8,'Temperature',0);
-    thermalBC(thermalmodel,'Edge',9,'Temperature',0); 
-    thermalBC(thermalmodel,'Edge',10,'Temperature',0); 
-    thermalBC(thermalmodel,'Edge',11,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',12,'Temperature',1);
-    thermalBC(thermalmodel,'Edge',13,'Temperature',0);
+    thermalBC(thermalmodel,'Edge',1,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',2,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',3,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',4,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',5,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',6,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',7,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',8,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',9,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',10,'Temperature',bc); 
+    thermalBC(thermalmodel,'Edge',11,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',12,'Temperature',bc);
+    thermalBC(thermalmodel,'Edge',13,'Temperature',bc);
     
     thermalProperties(thermalmodel,"ThermalConductivity",1.0);
     mesh = generateMesh(thermalmodel);
@@ -892,3 +895,6 @@ for i=1:ng
 end
 
 display(min_points);
+
+%%%%
+
