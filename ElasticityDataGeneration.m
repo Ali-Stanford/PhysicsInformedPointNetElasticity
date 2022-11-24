@@ -3,10 +3,13 @@
 ng = 90; %number of geometries
 name = "square";
 L = 0.3; %0.35; %0.35; %0.3; %0.5;
-x1 = -L; y1 = -L;
-x2 = L; y2 = -L;
-x3 = L; y3 = L;
-x4 = -L; y4 = L;
+%L = 0.75*L;
+alpha = 90*pi/180.0;    
+x1 = L; y1 = 0.0;
+x2 = x1*cos(alpha) - y1*sin(alpha); y2 = x1*sin(alpha) + y1*cos(alpha);
+x3 = x2*cos(alpha) - y2*sin(alpha); y3 = x2*sin(alpha) + y2*cos(alpha);  
+x4 = x3*cos(alpha) - y3*sin(alpha); y4 = x3*sin(alpha) + y3*cos(alpha);  
+
 min_points = 10000; %Gross Points
 L_out = 1.0; %1;
 
@@ -28,7 +31,7 @@ for i=1:ng
     %thermal model
     thermalmodel = createpde('thermal','steadystate');
     gm = geometryFromEdges(thermalmodel,g);
-     pdegplot(thermalmodel,'EdgeLabels','on');
+    pdegplot(thermalmodel,'EdgeLabels','on');
     thermalBC(thermalmodel,'Edge',1,'Temperature',1);
     thermalBC(thermalmodel,'Edge',2,'Temperature',1);
     thermalBC(thermalmodel,'Edge',3,'Temperature',0);
@@ -119,10 +122,11 @@ display(min_points);
 %%Triangle
 ng = 120; %number of geometries
 name = "triangle";
-L = 0.3; %0.35; %0.35; %0.3; %0.5;
-x1 = -L; y1 = -L;
-x2 = L; y2 = -L;
-x3 = 0; y3 = L;
+L = 0.35; %0.35; %0.35; %0.3; %0.5;
+alpha = 120*pi/180.0;    
+x1 = L; y1 = 0.0;
+x2 = x1*cos(alpha) - y1*sin(alpha); y2 = x1*sin(alpha) + y1*cos(alpha);
+x3 = x2*cos(alpha) - y2*sin(alpha); y3 = x2*sin(alpha) + y2*cos(alpha);  
 min_points = 10000; %Gross Points
 L_out = 1;
 
