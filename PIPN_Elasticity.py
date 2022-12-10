@@ -1,8 +1,6 @@
 #In the name of God
-
 #PIPN for Elasticity
 #Import Libraries
-
 import os
 import csv
 import linecache
@@ -37,7 +35,23 @@ from tensorflow import keras
 
 
 #Global Variables
-data = 45 #number of domains
+variation = 3
+var_ori = 2
+data_square = variation*int(360/4)/var_ori - 1  # 90
+data_triangle = variation*int(360/3)/var_ori    # 120
+data_pentagon = variation*int(360/5)/var_ori -1 # 72
+data_heptagon = variation*int(360/7)/var_ori    # 51
+data_octagon = variation*int(360/8)/var_ori - 1 # 45
+data_nonagon = variation*int(360/9)/var_ori - 1 # 40
+data_hexagon = variation*int(360/6)/var_ori - 1 # 60
+
+#total is 478
+#without triangle is 358, then -8, becomes 350
+
+#number of domains
+
+data = data_square + data_pentagon + data_hexagon + data_heptagon + data_octagon + data_nonagon
+
 Nd = 2 #dimension of problems, usually 2 or 3
 N_boundary = 1 
 num_points = 1100 
@@ -48,9 +62,9 @@ interior_list = [] #interior nodes without full, BC, sparse
 
 #Training parameters
 J_Loss = 0.00001
-LR = 0.0003 #learning rate
-Np = 5000  #Number of epochs
-Nb = 15 #batch size, note: Nb should be less than data
+LR = 0.0008 #0.0003 #learning rate
+Np = 5000 #Number of epochs
+Nb = 37 #28 #batch size, note: Nb should be less than data
 Ns = 1.0 #scaling the network
 pointer = np.zeros(shape=[Nb],dtype=int) #to save indices of batch numbers
 
@@ -238,52 +252,52 @@ T_fire = np.zeros(shape=(num_gross),dtype=float) + 100
 dTdx_fire = np.zeros(shape=(num_gross),dtype=float) + 100
 dTdy_fire = np.zeros(shape=(num_gross),dtype=float) + 100
 
-def readFire(number):
+def readFire(number,name):
     
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/x'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'x'+str(number)+'.txt', 'r') as f:
         for line in f:
             x_fire[coord] = float(line.split()[0])
             coord += 1        
     f.close()
 
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/y'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'y'+str(number)+'.txt', 'r') as f:
         for line in f:
             y_fire[coord] = float(line.split()[0])
             coord += 1    
     f.close()
     
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/u'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'u'+str(number)+'.txt', 'r') as f:
         for line in f:
             u_fire[coord] = float(line.split()[0])*1
             coord += 1    
     f.close()
 
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/v'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'v'+str(number)+'.txt', 'r') as f:
         for line in f:
             v_fire[coord] = float(line.split()[0])*1
             coord += 1
     f.close()
 
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/dTdx'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'dTdx'+str(number)+'.txt', 'r') as f:
         for line in f:
             dTdx_fire[coord] = float(line.split()[0])/1
             coord += 1
     f.close()
 
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/dTdy'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'dTdy'+str(number)+'.txt', 'r') as f:
         for line in f:
             dTdy_fire[coord] = float(line.split()[0])/1
             coord += 1
     f.close()
 
     coord = 0
-    with open('/scratch/users/kashefi/PIPNSolid/data10/T'+str(number)+'.txt', 'r') as f:
+    with open('/scratch/users/kashefi/PIPNSolid/data20/'+name+'T'+str(number)+'.txt', 'r') as f:
         for line in f:
             T_fire[coord] = float(line.split()[0])/1
             coord += 1
@@ -299,17 +313,27 @@ dTdx_fire_load = np.zeros(shape=(data,num_gross),dtype=float) + 100
 dTdy_fire_load = np.zeros(shape=(data,num_gross),dtype=float) + 100
 
 #Reading data
-for i in range(data):    
-    readFire(2*i+1);
-    for j in range(num_gross):
+
+#List_data = [data_triangle data_square data_pentagon data_hexagon data_heptagon data_octagon data_nonagon] 
+#list_name = ['triangle' 'square' 'pentagon' 'hexagon' 'heptagon' 'octagon' 'nonagon'] 
+
+list_data = [data_square, data_pentagon, data_hexagon, data_heptagon, data_octagon, data_nonagon] 
+list_name = ['square', 'pentagon', 'hexagon', 'heptagon', 'octagon', 'nanogan'] 
+
+counter = 0
+for k in range(len(list_data)):
+    for i in range(list_data[k]):    
+        readFire(2*i+1,list_name[k])
+        for j in range(num_gross):
         
-        x_fire_load[i][j] = x_fire[j]
-        y_fire_load[i][j] = y_fire[j]
-        u_fire_load[i][j] = u_fire[j]
-        v_fire_load[i][j] = v_fire[j]
-        T_fire_load[i][j] = T_fire[j]
-        dTdx_fire_load[i][j] = dTdx_fire[j]
-        dTdy_fire_load[i][j] = dTdy_fire[j] 
+            x_fire_load[counter][j] = x_fire[j]
+            y_fire_load[counter][j] = y_fire[j]
+            u_fire_load[counter][j] = u_fire[j]
+            v_fire_load[counter][j] = v_fire[j]
+            T_fire_load[counter][j] = T_fire[j]
+            dTdx_fire_load[counter][j] = dTdx_fire[j]
+            dTdy_fire_load[counter][j] = dTdy_fire[j]
+        counter += 1 
 
 
 plt.scatter(x_fire,y_fire,s=1.0)
@@ -358,7 +382,7 @@ plt.savefig('boundary.png',dpi=300)
 plt.clf()
 
 N_boundary = car_bound #We do not consider any boundary points 
-num_points = 1376 #4100 #memory sensetive
+num_points = 1204 #memory sensetive
 
 interior_point = num_points - N_boundary
 X_train = np.random.normal(size=(data, num_points, Nd))
@@ -412,48 +436,84 @@ plt.savefig('pre_sparse.png',dpi=300)
 plt.clf()
 
 #sensor setting
-Lx = 2
-Ly = 2
-deltay = 0.25 #2.0/48.0  
-deltax = 0.25 #2.0/48.0 
-step = 2 #6
-k_x = int(Lx/deltax) + 1 #int(Lx/(step*deltax))-1 
-k_y = int(Ly/deltay) + 1 #int(Ly/(step*deltay))-1 
+#For variation = 0
+#Lx = 2
+#Ly = 2
+#deltay = 0.25   
+#deltax = 0.25  
+#k_x = int(Lx/deltax) + 1 #int(Lx/(step*deltax))-1 
+#k_y = int(Ly/deltay) + 1 #int(Ly/(step*deltay))-1 
 
-print(k_x)
-print(k_y)
+#print(k_x)
+#print(k_y)
 
-counting = 0
-x_pre_sparse = np.random.normal(size=(k_x*k_y))
-y_pre_sparse = np.random.normal(size=(k_x*k_y))
-for i in range(k_x):
-    for j in range(k_y):
-        x_pre_sparse[counting] = i*deltax + x1 #step*(1+i)*deltax + x1 
-        y_pre_sparse[counting] = j*deltay + y1 #step*(1+j)*deltay + y1 
-        counting += 1
+#counting = 0
+#x_pre_sparse = np.random.normal(size=(k_x*k_y))
+#y_pre_sparse = np.random.normal(size=(k_x*k_y))
+#for i in range(k_x):
+#    for j in range(k_y):
+#        x_pre_sparse[counting] = i*deltax + x1 #step*(1+i)*deltax + x1 
+#        y_pre_sparse[counting] = j*deltay + y1 #step*(1+j)*deltay + y1 
+#        counting += 1
+
+k_x = 9
+k_y = 9
    
 sparse_n = int(k_x*k_y)
 sparse_list = [[-1 for i in range(sparse_n)] for j in range(data)] 
 
-#set_point = []
-for j in range(data):
+#for j in range(data):
+#    for i in range(k_x*k_y):
+#        x_i = x_pre_sparse[i]
+#        y_i = y_pre_sparse[i]
+#        di = np.random.normal(size=(num_points,2)) 
+#        for index in range(num_points):
+#            di[index][0] = 1.0*index  
+#            di[index][1] = np.sqrt(np.power(X_train[j][index][0]-x_i,2.0) + np.power(X_train[j][index][1]-y_i,2.0))
+        
+#        di = di[np.argsort(di[:, 1])]
+#        sparse_list[j][i] = int(di[0][0]) 
+
+
+for nn in range(data):
+    x1 = np.min(X_train[nn,:,0])
+    x2 = np.max(X_train[nn,:,0])
+    y1 = np.min(X_train[nn,:,1])
+    y2 = np.max(X_train[nn,:,1])
+    Lx = np.absolute(x2-x1)
+    Ly = np.absolute(y2-y1)
+    kx = 9
+    ky = 9
+    
+    deltax = Lx/8.0
+    deltay = Ly/8.0
+
+    #print(Lx)
+    #print(Ly)
+
+    counting = 0
+    x_pre_sparse = np.random.normal(size=(k_x*k_y))
+    y_pre_sparse = np.random.normal(size=(k_x*k_y))
+    for i in range(k_x):
+        for j in range(k_y):
+            x_pre_sparse[counting] = i*deltax + x1
+            y_pre_sparse[counting] = j*deltay + y1
+            counting += 1
+
     for i in range(k_x*k_y):
         x_i = x_pre_sparse[i]
         y_i = y_pre_sparse[i]
-        #di = np.random.normal(size=(num_points-N_boundary,2))
+        #print(x_i)
+        #print(y_i)
         di = np.random.normal(size=(num_points,2)) 
-        #for index in range(N_boundary,num_points):
-        #    di[index-N_boundary][0] = 1.0*index  
-        #    di[index-N_boundary][1] = np.sqrt(np.power(X_train[j][index][0]-x_i,2.0) + np.power(X_train[j][index][1]-y_i,2.0))
         for index in range(num_points):
             di[index][0] = 1.0*index  
-            di[index][1] = np.sqrt(np.power(X_train[j][index][0]-x_i,2.0) + np.power(X_train[j][index][1]-y_i,2.0))
-        
+            di[index][1] = np.sqrt(np.power(X_train[nn][index][0]-x_i,2.0) + np.power(X_train[nn][index][1]-y_i,2.0))
+            #print(di[index][1])
         di = di[np.argsort(di[:, 1])]
-        #if di[0][1] < 2.0:
-        sparse_list[j][i] = int(di[0][0]) 
-        #set_point.append(int(di[0][0]))
-        
+        sparse_list[nn][i] = int(di[0][0]) 
+   
+
 print('number of sensors')
 print(sparse_n)
 
@@ -647,9 +707,10 @@ def ComputeCost_SE(X,Y):
     
     Sparse_cost = tf.reduce_mean(tf.square(u_sparse - sparse_u_truth) + tf.square(v_sparse - sparse_v_truth))
 
-    return (PDE_cost + 100.0*Sparse_cost)
-    #return (PDE_cost + Sparse_cost + BC_cost)    
-    #return (PDE_cost + 100*BC_cost) #check it
+    #return (PDE_cost + 100.0*Sparse_cost)
+    return (PDE_cost + 50.0*Sparse_cost)
+    #return (PDE_cost + 1.0*Sparse_cost)
+
     
 def build_model_Elasticity():
     
@@ -799,8 +860,8 @@ def build_model_Elasticity():
             #plotSolutions2DPointCloud(CFDsolution_p(index),index,'p truth '+str(index),True, 'Ground Truth Temperature (C)', 1000)
             #plotSolutions2DPointCloud(p_final,index,'p prediction '+str(index),False, 'Predicted Temperature (C)', 1000)
             
-            plotErrors2DPointCloud(CFDsolution_u(index),u_final,index,'abs error u'+str(index),'Absolute Displacement Error u (mm)',100)
-            plotErrors2DPointCloud(CFDsolution_v(index),v_final,index,'abs error v'+str(index),'Absolute Displacement Error v (mm)',100)
+            plotErrors2DPointCloud(CFDsolution_u(index),u_final,index,'error u'+str(index),'Absolute Displacement Error u (mm)',100)
+            plotErrors2DPointCloud(CFDsolution_v(index),v_final,index,'error v'+str(index),'Absolute Displacement Error v (mm)',100)
             #plotErrors2DPointCloud(CFDsolution_p(index),p_final,index,'abs error p'+str(index),'Absolute Temperature Error (C)',1000)
             
         #Error Analysis Based on RMSE
@@ -953,4 +1014,3 @@ def build_model_Elasticity():
         #plotErrors2DPointCloud(CFDsolution_p(error_p_rel.index(min(error_p_rel))),p_final,error_p_rel.index(min(error_p_rel)),'min error rel p ')
         
 build_model_Elasticity()
-
