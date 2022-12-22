@@ -1,5 +1,7 @@
-#In the name of God
-#PIPN for Elasticity
+#In the Name of God
+#Author: Ali Kashefi
+#Physics-Informed PointNet for Linear Elasticity
+
 #Import Libraries
 import os
 import csv
