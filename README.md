@@ -1,13 +1,15 @@
 # Physics-Informed PointNet (PIPN) for Linear Elasticity on A Bunch of Irregular Geometries
 
 **Author:** Ali Kashefi (kashefi@stanford.edu)<br>
-**Description:** Implementation of physics-informed PointNet (PIPN) for weakly-supervised learning of the <br>
+**Description:** Implementation of physics-informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity (plane stress) on multiple sets of irregular geometries <br>
 **Version:** 1.0 <br>
 
 **Citation** <br>
-If you use the code, plesae cite the following journal paper: <br>
+If you use the code, plesae cite the following journal papers: <br>
 
-**[Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries](https://doi.org/10.1016/j.jcp.2022.111510)**
+1.
+
+2. **[Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries](https://doi.org/10.1016/j.jcp.2022.111510)**
 
 @article{Kashefi2022PIPN, <br>
 title = {Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries}, <br>
