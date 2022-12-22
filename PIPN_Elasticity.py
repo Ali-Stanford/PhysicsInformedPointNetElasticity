@@ -66,7 +66,7 @@ J_Loss = 0.00001
 LR = 0.0003 #learning rate
 Np = 3000 #5000 #Number of epochs
 Nb = 19 # 2,4,7,14,19,28,38 #batch size, note: Nb should be less than data
-Ns = 0.125 #scaling the network
+Ns = 0.125 # 4,2,1,0.5,0.25,0.125 scaling the network
 pointer = np.zeros(shape=[Nb],dtype=int) #to save indices of batch numbers
 
 #Material-properties (plane stress)
