@@ -27,7 +27,7 @@ from tensorflow.python.keras.layers import Input
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dense, Reshape
 #from tensorflow.python.keras.layers import BatchNormalization
-from tensorflow.python.keras.layers import Convolution1D, MaxPooling1D
+from tensorflow.python.keras.layers import Convolution1D, MaxPooling1D, AveragePooling1D
 from tensorflow.python.keras.layers import Lambda, concatenate
 from tensorflow.python.keras import initializers
 from tensorflow import keras
@@ -37,16 +37,17 @@ from tensorflow import keras
 #Global Variables
 variation = 3
 var_ori = 2
-data_square = variation*int(360/4)/var_ori - 1  # 90
-data_triangle = variation*int(360/3)/var_ori    # 120
-data_pentagon = variation*int(360/5)/var_ori -1 # 72
-data_heptagon = variation*int(360/7)/var_ori    # 51
-data_octagon = variation*int(360/8)/var_ori - 1 # 45
-data_nonagon = variation*int(360/9)/var_ori - 1 # 40
-data_hexagon = variation*int(360/6)/var_ori - 1 # 60
+data_square = int(variation*int(360/4)/var_ori) - 1  # 90
+data_triangle = int(variation*int(360/3)/var_ori)    # 120
+data_pentagon = int(variation*int(360/5)/var_ori) -1 # 72
+data_heptagon = int(variation*int(360/7)/var_ori)    # 51
+data_octagon = int(variation*int(360/8)/var_ori) - 1 # 45
+data_nonagon = int(variation*int(360/9)/var_ori) - 1 # 40
+data_hexagon = int(variation*int(360/6)/var_ori)     # 60
 
-#total is 478
-#without triangle is 358, then -8, becomes 350
+#always, without triangle
+#total is now 536
+# 536 - 4, becomes 532 = 2*2*7*19
 
 #number of domains
 
@@ -62,10 +63,10 @@ interior_list = [] #interior nodes without full, BC, sparse
 
 #Training parameters
 J_Loss = 0.00001
-LR = 0.0008 #0.0003 #learning rate
-Np = 5000 #Number of epochs
-Nb = 37 #28 #batch size, note: Nb should be less than data
-Ns = 1.0 #scaling the network
+LR = 0.0003 #learning rate
+Np = 3000 #5000 #Number of epochs
+Nb = 19 # 2,4,7,14,19,28,38 #batch size, note: Nb should be less than data
+Ns = 0.125 #scaling the network
 pointer = np.zeros(shape=[Nb],dtype=int) #to save indices of batch numbers
 
 #Material-properties (plane stress)
@@ -151,13 +152,6 @@ def plotSolutions2DPointCloud(S,index,name,flag,title,coeficient):
     y_p = X_train[index,:,1]
     marker_size= 1.0
 
-    #triang = tri.Triangulation(x_p, y_p)
-    #plt.tripcolor(triang, U*coeficient, shading='gouraud', cmap='jet')
-
-
-    #plt.tricontour(x_p, y_p, U*coeficient, 15, linewidths=0.5, colors='k')
-    #plt.tricontourf(x_p, y_p, U*coeficient, 15, cmap='hot')
- 
     plt.scatter(x_p, y_p, marker_size, U, cmap='jet')
     cbar= plt.colorbar()
     plt.locator_params(axis="x", nbins=6)
@@ -165,9 +159,14 @@ def plotSolutions2DPointCloud(S,index,name,flag,title,coeficient):
     plt.title(title)
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
+    
+    plt.xticks(np.arange(min(x_p), max(x_p)+0.2, 0.2))
+    plt.yticks(np.arange(min(y_p), max(y_p)+0.2, 0.2))
+    plt.xticks(rotation = 45)
+    
     #plt.title(name)
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig(name+'.png',dpi=300)
+    plt.savefig(name+'.png',bbox_inches="tight",dpi=300)
     #plt.savefig(name+'.eps')    
     plt.clf()
     #plt.show()
@@ -181,12 +180,6 @@ def plotErrors2DPointCloud(Uexact,Upredict,index,name,title, coef):
     y_p = X_train[index,:,1]
     marker_size= 1.0
     
-    #triang = tri.Triangulation(x_p, y_p)
-    #plt.tripcolor(triang, np.absolute(Uexact-Up)*coef, shading='gouraud', cmap='jet')
-
-    #plt.tricontour(x_p, y_p, np.absolute(Uexact-Up)*coef, 15, linewidths=0.5, colors='k')
-    #plt.tricontourf(x_p, y_p, np.absolute(Uexact-Up)*coef, 15, cmap='hot')
-
     plt.scatter(x_p, y_p, marker_size, np.absolute(Uexact-Up), cmap='jet')
     cbar= plt.colorbar()
     plt.locator_params(axis="x", nbins=6)
@@ -194,9 +187,16 @@ def plotErrors2DPointCloud(Uexact,Upredict,index,name,title, coef):
     plt.title(title)
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
+    #plt.xlim([min(x_p), max(x_p)])
+    #plt.ylim([min(y_p), max(y_p)])
     #plt.title(name)
+    plt.xticks(np.arange(min(x_p), max(x_p)+0.2, 0.2))
+    plt.yticks(np.arange(min(y_p), max(y_p)+0.2, 0.2))
+    plt.xticks(rotation = 45)
+
+    
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig(name+'.png',dpi=300)
+    plt.savefig(name+'.png',bbox_inches="tight",dpi=300)
     #plt.savefig(name+'.eps')    
     plt.clf()
     #plt.show()
@@ -320,6 +320,9 @@ dTdy_fire_load = np.zeros(shape=(data,num_gross),dtype=float) + 100
 list_data = [data_square, data_pentagon, data_hexagon, data_heptagon, data_octagon, data_nonagon] 
 list_name = ['square', 'pentagon', 'hexagon', 'heptagon', 'octagon', 'nanogan'] 
 
+#list_data = [data_square] 
+#list_name = ['square']
+
 counter = 0
 for k in range(len(list_data)):
     for i in range(list_data[k]):    
@@ -376,10 +379,10 @@ print('index bound')
 print(car_bound)
 
 #plot boundary points
-plt.scatter(x_fire_load[1,index_bound[1,:]],y_fire_load[1,index_bound[1,:]],s=1.0)
-plt.gca().set_aspect('equal', adjustable='box')
-plt.savefig('boundary.png',dpi=300)
-plt.clf()
+#plt.scatter(x_fire_load[1,index_bound[1,:]],y_fire_load[1,index_bound[1,:]],s=1.0)
+#plt.gca().set_aspect('equal', adjustable='box')
+#plt.savefig('boundary.png',dpi=300)
+#plt.clf()
 
 N_boundary = car_bound #We do not consider any boundary points 
 num_points = 1204 #memory sensetive
@@ -528,9 +531,12 @@ for s in range(data):
     plt.scatter(X_train[s,sparse_list_q[s,:],0],X_train[s,sparse_list_q[s,:],1],s=20.0,color='red',marker='<')
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
-    plt.title('Sensor Locations')
+    plt.xticks(np.arange(min(X_train[s,:,0]), max(X_train[s,:,0])+0.2, 0.2))
+    plt.yticks(np.arange(min(X_train[s,:,1]), max(X_train[s,:,1])+0.2, 0.2))
+    plt.xticks(rotation = 45)
+    plt.title('Sensor locations')
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig('sensor'+str(s)+'.png',dpi=300)
+    plt.savefig('sensor'+str(s)+'.png',bbox_inches="tight",dpi=300)
     plt.clf()
 
 def problemSet():
@@ -603,6 +609,7 @@ g = Convolution1D(int(1024*Ns), 1, activation='tanh',kernel_initializer=initiali
 
 # global_feature
 global_feature = MaxPooling1D(pool_size=num_points)(g)
+#global_feature = AveragePooling1D(pool_size=num_points)(g)
 global_feature = Lambda(exp_dim, arguments={'num_points': num_points})(global_feature)
 
 # point_net_seg
@@ -616,9 +623,16 @@ c = Convolution1D(int(128*Ns), 1, activation='tanh',kernel_initializer=initializ
 c = Convolution1D(int(128*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
 #c = BatchNormalization()(c)
 prediction = Convolution1D(category, 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
-#prediction = Convolution1D(category, 1, activation= TANHscale ,kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
 model = Model(inputs=input_points, outputs=prediction)
 
+weight = np.zeros(Np)
+def set_weight():
+    for i in range(len(weight)): 
+        weight[i] = 50
+
+set_weight()
+
+pose_weight = tf.placeholder(tf.float32, None)
 
 cost_BC = tf.placeholder(tf.float32, None)
 cost_sparse = tf.placeholder(tf.float32, None) 
@@ -707,10 +721,15 @@ def ComputeCost_SE(X,Y):
     
     Sparse_cost = tf.reduce_mean(tf.square(u_sparse - sparse_u_truth) + tf.square(v_sparse - sparse_v_truth))
 
+    #w_sparse = tf.gather(weight, pose_weight) 
+    #w_sparse = tf.cast(w_sparse, dtype='float32')
+    
+    w_sparse = tf.cast(pose_weight, dtype='float32')
+    
+    return (PDE_cost + w_sparse*Sparse_cost)
+   
     #return (PDE_cost + 100.0*Sparse_cost)
-    return (PDE_cost + 50.0*Sparse_cost)
-    #return (PDE_cost + 1.0*Sparse_cost)
-
+    #return (PDE_cost + 50.0*Sparse_cost)
     
 def build_model_Elasticity():
     
@@ -796,33 +815,40 @@ def build_model_Elasticity():
                         catch += 1
 
                 X_train_mini = np.take(X_train, pointer[:], axis=0)
+
+                w0 = weight[epoch]
                 
-                gr, temp_cost_m, gr1, gr2, gr3, gr4, gr5, gr6 = sess.run([optimizer, cost, pose_BC, pose_sparse, pose_interior, pose_BC_p, pose_sparse_p, pose_interior_p], feed_dict={input_points:X_train_mini, pose_BC:group_BC, pose_sparse:group_sparse, pose_interior:group_interior, pose_BC_p:group_BC_p, pose_sparse_p:group_sparse_p, pose_interior_p:group_interior_p})
+                gr, temp_cost_m, gr1, gr2, gr3, gr4, gr5, gr6, gr7 = sess.run([optimizer, cost, pose_BC, pose_sparse, pose_interior, pose_BC_p, pose_sparse_p, pose_interior_p, pose_weight], feed_dict={input_points:X_train_mini, pose_BC:group_BC, pose_sparse:group_sparse, pose_interior:group_interior, pose_BC_p:group_BC_p, pose_sparse_p:group_sparse_p, pose_interior_p:group_interior_p, pose_weight:w0})
                 
+                temp_cost += temp_cost_m
+
                 if math.isnan(temp_cost_m):
                     print('Nan Value\n')
                     return
-                
-            u_out_check = sess.run([vel_u],feed_dict={input_points:X_train})
-            u_final_check = np.power(u_out_check[0],1.0)
-            v_out_check = sess.run([vel_v],feed_dict={input_points:X_train})
-            v_final_check = np.power(v_out_check[0],1.0)
+
+            temp_cost = temp_cost/data    
+            LOSS_Total.append(temp_cost)
+
+            #u_out_check = sess.run([vel_u],feed_dict={input_points:X_train})
+            #u_final_check = np.power(u_out_check[0],1.0)
+            #v_out_check = sess.run([vel_v],feed_dict={input_points:X_train})
+            #v_final_check = np.power(v_out_check[0],1.0)
                   
-            sum = 0  
-            for index in range(data):
-               sum += computeRelativeL2(CFDsolution_u(index),u_final_check,index) 
-               sum += computeRelativeL2(CFDsolution_v(index),v_final_check,index) 
+            #sum = 0  
+            #for index in range(data):
+            #   sum += computeRelativeL2(CFDsolution_u(index),u_final_check,index) 
+            #   sum += computeRelativeL2(CFDsolution_v(index),v_final_check,index) 
             
-            relative_u = sum/(2*data)
+            #relative_u = sum/(2*data)
      
             print(epoch)
-            #print(temp_cost)
-            print(relative_u)
-            LOSS_Total.append(temp_cost)
-            LOSS_Total_u.append(relative_u)
+            print(temp_cost)
+            #print(relative_u)
+            
+            #LOSS_Total_u.append(relative_u)
 
-            #if temp_cost < min_loss:
-            if relative_u < min_relative_u:
+            if temp_cost < min_loss:
+            #if relative_u < min_relative_u:
                 u_out = sess.run([vel_u],feed_dict={input_points:X_train}) 
                 v_out = sess.run([vel_v],feed_dict={input_points:X_train}) 
                 #p_out = sess.run([vel_p],feed_dict={input_points:X_train}) 
@@ -838,31 +864,28 @@ def build_model_Elasticity():
                 #dp_dy_final = np.power(dp_dy_out[0],1.0) 
 
                 min_loss = temp_cost
-                min_relative_u = relative_u
+                #min_relative_u = relative_u
                 converge_iteration = epoch
 
                 #temp_cost += temp_cost_m/int(data/Nb)
-                temp_cost += temp_cost_m/int(data)
+                #temp_cost += temp_cost_m/int(data)
 
             #if min_loss < criteria:
             #    break 
         
         end_ite = timer()
         
-        plotCost(LOSS_Total_u,'Totalu ','Total loss u')
-        plotCost(LOSS_Total,'Total','Total loss')
+        plotCost(LOSS_Total_u,'bTotalu ','Total loss u')
+        plotCost(LOSS_Total,'bTotal','Total loss')
         
         for index in range(data):
-            plotSolutions2DPointCloud(CFDsolution_u(index),index,'u truth '+str(index),True, 'Ground Truth Displacement u (mm)', 100)
-            plotSolutions2DPointCloud(u_final,index,'u prediction '+str(index),False,'Predicted Displacement u (mm)', 100)
-            plotSolutions2DPointCloud(CFDsolution_v(index),index,'v truth '+str(index),True, 'Ground Truth Displacement v (mm)', 100)
-            plotSolutions2DPointCloud(v_final,index,'v prediction '+str(index),False,'Predicted Displacement v (mm)', 100)
-            #plotSolutions2DPointCloud(CFDsolution_p(index),index,'p truth '+str(index),True, 'Ground Truth Temperature (C)', 1000)
-            #plotSolutions2DPointCloud(p_final,index,'p prediction '+str(index),False, 'Predicted Temperature (C)', 1000)
+            plotSolutions2DPointCloud(CFDsolution_u(index),index,'u truth '+str(index),True, 'Ground truth $\it{u}$ (m)', 100)
+            plotSolutions2DPointCloud(u_final,index,'u prediction '+str(index),False,'Prediction $\it{u}$ (m)', 100)
+            plotSolutions2DPointCloud(CFDsolution_v(index),index,'v truth '+str(index),True, 'Ground truth $\it{v}$ (m)', 100)
+            plotSolutions2DPointCloud(v_final,index,'v prediction '+str(index),False,'Prediction $\it{v}$ (m)', 100)
             
-            plotErrors2DPointCloud(CFDsolution_u(index),u_final,index,'error u'+str(index),'Absolute Displacement Error u (mm)',100)
-            plotErrors2DPointCloud(CFDsolution_v(index),v_final,index,'error v'+str(index),'Absolute Displacement Error v (mm)',100)
-            #plotErrors2DPointCloud(CFDsolution_p(index),p_final,index,'abs error p'+str(index),'Absolute Temperature Error (C)',1000)
+            plotErrors2DPointCloud(CFDsolution_u(index),u_final,index,'error u'+str(index),'Absolute error $\it{u}$ (m)',100)
+            plotErrors2DPointCloud(CFDsolution_v(index),v_final,index,'error v'+str(index),'Absolute error $\it{v}$ (m)',100)
             
         #Error Analysis Based on RMSE
         error_u = [] ;
@@ -881,10 +904,6 @@ def build_model_Elasticity():
             error_u_rel.append(computeRelativeL2(CFDsolution_u(index),u_final,index))
             error_v_rel.append(computeRelativeL2(CFDsolution_v(index),v_final,index))
             #error_p_rel.append(computeRelativeL2(CFDsolution_p(index),p_final,index))
-
-            #error_u_rel.append(computeRelativeL2NonWall(CFDsolution_u(index),u_final,index))
-            #error_v_rel.append(computeRelativeL2NonWall(CFDsolution_v(index),v_final,index))
-            #error_p_rel.append(computeRelativeL2NonWall(CFDsolution_p(index),p_final,index))
          
         for index in range(data):
             print('\n')
@@ -971,12 +990,14 @@ def build_model_Elasticity():
         print('\n')
         
         print('average relative u:')
-        print(sum(error_u_rel)/len(error_u_rel))
+        #print(sum(error_u_rel)/len(error_u_rel))
+        print(sum(error_u_rel)/data)
 
         print('\n')
 
         print('average relative v:')
-        print(sum(error_v_rel)/len(error_v_rel))
+        #print(sum(error_v_rel)/len(error_v_rel))
+        print(sum(error_v_rel)/data)
 
         print('\n')
 
@@ -1006,11 +1027,8 @@ def build_model_Elasticity():
 
         print('\n')
 
-        #plotErrors2DPointCloud(CFDsolution_u(error_u_rel.index(max(error_u_rel))),u_final,error_u_rel.index(max(error_u_rel)),'max error rel u ')
-        #plotErrors2DPointCloud(CFDsolution_u(error_u_rel.index(min(error_u_rel))),u_final,error_u_rel.index(min(error_u_rel)),'min error rel u ')
-        #plotErrors2DPointCloud(CFDsolution_v(error_v_rel.index(max(error_v_rel))),v_final,error_v_rel.index(max(error_v_rel)),'max error rel v ')
-        #plotErrors2DPointCloud(CFDsolution_v(error_v_rel.index(min(error_v_rel))),v_final,error_v_rel.index(min(error_v_rel)),'min error rel v ')
-        #plotErrors2DPointCloud(CFDsolution_p(error_p_rel.index(max(error_p_rel))),p_final,error_p_rel.index(max(error_p_rel)),'max error rel p ')
-        #plotErrors2DPointCloud(CFDsolution_p(error_p_rel.index(min(error_p_rel))),p_final,error_p_rel.index(min(error_p_rel)),'min error rel p ')
-        
+        with open('bTotalLoss.txt', 'w') as fp:
+            for i in range(len(LOSS_Total)):
+                fp.write(str(i) + '  ' + str(LOSS_Total[i]) + '\n')
+                
 build_model_Elasticity()
