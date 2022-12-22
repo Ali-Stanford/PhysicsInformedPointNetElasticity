@@ -187,8 +187,6 @@ def plotErrors2DPointCloud(Uexact,Upredict,index,name,title, coef):
     plt.title(title)
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
-    #plt.xlim([min(x_p), max(x_p)])
-    #plt.ylim([min(y_p), max(y_p)])
     #plt.title(name)
     plt.xticks(np.arange(min(x_p), max(x_p)+0.2, 0.2))
     plt.yticks(np.arange(min(y_p), max(y_p)+0.2, 0.2))
@@ -223,22 +221,8 @@ def computeRelativeL2(Uexact,Upredict,index):
 
     return np.sqrt(sum1/sum2)
 
-def computeRelativeL2NonWall(Uexact,Upredict,index):
-
-    Up = np.zeros(num_points,dtype=float)
-    for i in range(num_points):
-        Up[i] = Upredict[index][i] 
-        
-    sum1=0
-    sum2=0
-    for i in range(N_boundary,num_points):
-        sum1 += np.square(Up[i]-Uexact[i])
-        sum2 += np.square(Uexact[i])
-
-    return np.sqrt(sum1/sum2)
-
 #Reading Data 
-num_gross = 6000 #1500
+num_gross = 6000
 Gross_train = np.zeros(shape=(data, num_gross, Nd),dtype=float)
 num_point_train = np.zeros(shape=(data),dtype=int)
 Gross_train_CFD = np.zeros(shape=(data, num_gross, category),dtype=float) #change 4 in the future
@@ -314,14 +298,8 @@ dTdy_fire_load = np.zeros(shape=(data,num_gross),dtype=float) + 100
 
 #Reading data
 
-#List_data = [data_triangle data_square data_pentagon data_hexagon data_heptagon data_octagon data_nonagon] 
-#list_name = ['triangle' 'square' 'pentagon' 'hexagon' 'heptagon' 'octagon' 'nonagon'] 
-
 list_data = [data_square, data_pentagon, data_hexagon, data_heptagon, data_octagon, data_nonagon] 
 list_name = ['square', 'pentagon', 'hexagon', 'heptagon', 'octagon', 'nanogan'] 
-
-#list_data = [data_square] 
-#list_name = ['square']
 
 counter = 0
 for k in range(len(list_data)):
@@ -340,7 +318,6 @@ for k in range(len(list_data)):
 
 
 plt.scatter(x_fire,y_fire,s=1.0)
-#plt.scatter(x_pre_sparse[0,:],y_pre_sparse[0,:],s=20.0,color='red',marker='<')
 plt.xlabel('x (m)')
 plt.ylabel('y (m)')
 plt.title('Location of 16 Sensors')
@@ -378,12 +355,6 @@ for j in range(data):
 print('index bound')
 print(car_bound)
 
-#plot boundary points
-#plt.scatter(x_fire_load[1,index_bound[1,:]],y_fire_load[1,index_bound[1,:]],s=1.0)
-#plt.gca().set_aspect('equal', adjustable='box')
-#plt.savefig('boundary.png',dpi=300)
-#plt.clf()
-
 N_boundary = car_bound #We do not consider any boundary points 
 num_points = 1204 #memory sensetive
 
@@ -401,8 +372,6 @@ for i in range(data):
         Fire_train[i][k][2] = dTdx_fire_load[i][index_bound[i][k]]
         Fire_train[i][k][3] = dTdy_fire_load[i][index_bound[i][k]]
     
-
-    #index_rest = np.arange(num_points)
     index_rest = np.zeros(shape=(interior_point),dtype=int)
     cum = 0
     flag = True
@@ -430,7 +399,6 @@ for i in range(data):
 #plotting
 
 plt.scatter(X_train[0,:,0],X_train[0,:,1],s=1.0)
-#plt.scatter(x_pre_sparse[0,:],y_pre_sparse[0,:],s=20.0,color='red',marker='<')
 plt.xlabel('x (m)')
 plt.ylabel('y (m)')
 plt.title('Location of 16 Sensors')
@@ -439,44 +407,11 @@ plt.savefig('pre_sparse.png',dpi=300)
 plt.clf()
 
 #sensor setting
-#For variation = 0
-#Lx = 2
-#Ly = 2
-#deltay = 0.25   
-#deltax = 0.25  
-#k_x = int(Lx/deltax) + 1 #int(Lx/(step*deltax))-1 
-#k_y = int(Ly/deltay) + 1 #int(Ly/(step*deltay))-1 
-
-#print(k_x)
-#print(k_y)
-
-#counting = 0
-#x_pre_sparse = np.random.normal(size=(k_x*k_y))
-#y_pre_sparse = np.random.normal(size=(k_x*k_y))
-#for i in range(k_x):
-#    for j in range(k_y):
-#        x_pre_sparse[counting] = i*deltax + x1 #step*(1+i)*deltax + x1 
-#        y_pre_sparse[counting] = j*deltay + y1 #step*(1+j)*deltay + y1 
-#        counting += 1
-
 k_x = 9
 k_y = 9
    
-sparse_n = int(k_x*k_y)
+sparse_n = int(k_x*k_y) # 81=9*9
 sparse_list = [[-1 for i in range(sparse_n)] for j in range(data)] 
-
-#for j in range(data):
-#    for i in range(k_x*k_y):
-#        x_i = x_pre_sparse[i]
-#        y_i = y_pre_sparse[i]
-#        di = np.random.normal(size=(num_points,2)) 
-#        for index in range(num_points):
-#            di[index][0] = 1.0*index  
-#            di[index][1] = np.sqrt(np.power(X_train[j][index][0]-x_i,2.0) + np.power(X_train[j][index][1]-y_i,2.0))
-        
-#        di = di[np.argsort(di[:, 1])]
-#        sparse_list[j][i] = int(di[0][0]) 
-
 
 for nn in range(data):
     x1 = np.min(X_train[nn,:,0])
@@ -491,9 +426,6 @@ for nn in range(data):
     deltax = Lx/8.0
     deltay = Ly/8.0
 
-    #print(Lx)
-    #print(Ly)
-
     counting = 0
     x_pre_sparse = np.random.normal(size=(k_x*k_y))
     y_pre_sparse = np.random.normal(size=(k_x*k_y))
@@ -506,23 +438,18 @@ for nn in range(data):
     for i in range(k_x*k_y):
         x_i = x_pre_sparse[i]
         y_i = y_pre_sparse[i]
-        #print(x_i)
-        #print(y_i)
         di = np.random.normal(size=(num_points,2)) 
         for index in range(num_points):
             di[index][0] = 1.0*index  
             di[index][1] = np.sqrt(np.power(X_train[nn][index][0]-x_i,2.0) + np.power(X_train[nn][index][1]-y_i,2.0))
-            #print(di[index][1])
         di = di[np.argsort(di[:, 1])]
         sparse_list[nn][i] = int(di[0][0]) 
    
-
 print('number of sensors')
 print(sparse_n)
 
 print('number of data')
 print(data)
-
 
 #plot sensor locoations
 sparse_list_q = np.array(sparse_list).astype(int)
@@ -547,11 +474,7 @@ def problemSet():
 
     for i in range(num_points):
         full_list.append(i)
-    
-    #for i in range(data):
-    #    for j in range(sparse_n):
-    #        sparse_list[i][j] = set_point[j] ###needs to be modify
-    
+        
     for i in range(num_points):
         if i in BC_list:
             continue
@@ -650,7 +573,6 @@ def ComputeCost_SE(X,Y):
 
     u_in = tf.gather(tf.reshape(Y[0][:,:,0],[-1]),pose_interior_p)
     v_in = tf.gather(tf.reshape(Y[0][:,:,1],[-1]),pose_interior_p)
-    #T_in = tf.gather(tf.reshape(Y[0][:,:,2],[-1]),pose_interior_p)
     du_dx_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,0], X)[0][:,:,0],[-1]),pose_interior_p) #du/dx in domain
     d2u_dx2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,0], X)[0][:,:,0], X)[0][:,:,0],[-1]),pose_interior_p) #d2u/dx2 in domain
     du_dy_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,0], X)[0][:,:,1],[-1]),pose_interior_p) #du/dy in domain
@@ -659,15 +581,6 @@ def ComputeCost_SE(X,Y):
     d2v_dx2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,0], X)[0][:,:,0], [-1]),pose_interior_p) #d2v/dx2 in domain
     dv_dy_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,1], X)[0][:,:,1],[-1]),pose_interior_p) #dv/dy in domain
     d2v_dy2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,1], X)[0][:,:,1], [-1]),pose_interior_p) #d2v/dy2 in domain
-    
-    #dT_dx_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,2], X)[0][:,:,0],[-1]),pose_interior_p) #dp/dx in domain
-    #dT_dy_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,2], X)[0][:,:,1],[-1]),pose_interior_p) #dp/dy in domain
-    
-    #d2T_dx2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,2], X)[0][:,:,0], X)[0][:,:,0], [-1]),pose_interior_p)
-    #d2T_dy2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,2], X)[0][:,:,1], X)[0][:,:,1], [-1]),pose_interior_p)
-    
-    #du_dy_in = tf.gather(tf.reshape(backend.gradients(Y[0][:,:,0], X)[0][:,:,1],[-1]),pose_interior_p) #du/dy in domain
-    #dv_dx_in = tf.gather(tf.reshape(backend.gradients(Y[0][:,:,1], X)[0][:,:,0],[-1]),pose_interior_p) #dv/dx in domain
     
     dv_dx_dy_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,0], X)[0][:,:,1], [-1]),pose_interior_p)
     du_dx_dy_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,0], X)[0][:,:,0], X)[0][:,:,1], [-1]),pose_interior_p)
@@ -678,25 +591,16 @@ def ComputeCost_SE(X,Y):
     dT_dy_truth = tf.gather(fire_dTdy, pose_interior) 
     dT_dy_truth = tf.cast(dT_dy_truth, dtype='float32')
 
-    #sparse_u_truth = tf.gather(fire_u, pose_sparse) 
-    #sparse_u_truth = tf.cast(sparse_u_truth, dtype='float32')
-
     fx_in = -E*alpha/(1-nu)*dT_dx_truth
     fy_in = -E*alpha/(1-nu)*dT_dy_truth
 
     r1 = (-c11*d2u_dx2_in - c12*dv_dx_dy_in - c66*d2u_dy2_in - c66*dv_dx_dy_in) + (fx_in)
     r2 = (-c66*du_dx_dy_in - c66*d2v_dx2_in - c12*du_dx_dy_in - c22*d2v_dy2_in) + (fy_in)
-    #r3 = Ko*(d2T_dx2_in + d2T_dy2_in)
          
     u_boundary = tf.gather(tf.reshape(Y[0][:,:,0], [-1]), pose_BC_p) 
     u_sparse = tf.gather(tf.reshape(Y[0][:,:,0], [-1]), pose_sparse_p)
     v_boundary = tf.gather(tf.reshape(Y[0][:,:,1], [-1]), pose_BC_p) 
     v_sparse = tf.gather(tf.reshape(Y[0][:,:,1], [-1]), pose_sparse_p)
-    #T_boundary = tf.gather(tf.reshape(Y[0][:,:,2], [-1]), pose_BC_p) 
-    #T_sparse = tf.gather(tf.reshape(Y[0][:,:,2], [-1]), pose_sparse_p)
-   
-    #boundary_T_truth = tf.gather(fire_T, pose_BC)
-    #boundary_T_truth = tf.cast(boundary_T_truth, dtype='float32')
     
     boundary_u_truth = tf.gather(fire_u, pose_BC)
     boundary_u_truth = tf.cast(boundary_u_truth, dtype='float32')
@@ -710,27 +614,13 @@ def ComputeCost_SE(X,Y):
     sparse_v_truth = tf.gather(fire_v, pose_sparse) 
     sparse_v_truth = tf.cast(sparse_v_truth, dtype='float32')
 
-    #sparse_T_truth = tf.gather(fire_T, pose_sparse) 
-    #sparse_T_truth = tf.cast(sparse_T_truth, dtype='float32')
-
-    PDE_cost = tf.reduce_mean(tf.square(r1)+tf.square(r2))
-    #BC_cost = tf.reduce_mean(tf.square(u_boundary - boundary_u_truth) + tf.square(v_boundary - boundary_v_truth))
-    
-    #Sparse_cost = tf.reduce_mean(tf.square(u_sparse - sparse_u_truth)+tf.square(v_sparse - sparse_v_truth)+tf.square(T_sparse - sparse_T_truth))
-
-    
+    PDE_cost = tf.reduce_mean(tf.square(r1)+tf.square(r2))    
     Sparse_cost = tf.reduce_mean(tf.square(u_sparse - sparse_u_truth) + tf.square(v_sparse - sparse_v_truth))
 
-    #w_sparse = tf.gather(weight, pose_weight) 
-    #w_sparse = tf.cast(w_sparse, dtype='float32')
-    
     w_sparse = tf.cast(pose_weight, dtype='float32')
     
     return (PDE_cost + w_sparse*Sparse_cost)
-   
-    #return (PDE_cost + 100.0*Sparse_cost)
-    #return (PDE_cost + 50.0*Sparse_cost)
-    
+       
 def build_model_Elasticity():
     
     LOSS_Total = []
@@ -743,16 +633,10 @@ def build_model_Elasticity():
     cost = ComputeCost_SE(model.inputs,model.outputs)    
     vel_u = compute_u(model.outputs)
     vel_v = compute_v(model.outputs)
-    #vel_p = compute_p(model.outputs)
-    #vel_dp_dx = compute_dp_dx(model.inputs,model.outputs)
-    #vel_dp_dy = compute_dp_dy(model.inputs,model.outputs)
     
     u_final = np.zeros((data,num_points),dtype=float)
     v_final = np.zeros((data,num_points),dtype=float)
-    #p_final = np.zeros((data,num_points),dtype=float)
-    #dp_dx_final = np.zeros((data,num_points),dtype=float)
-    #dp_dy_final = np.zeros((data,num_points),dtype=float)
-
+   
     optimizer = tf.train.AdamOptimizer(learning_rate = LR , beta1=0.9, beta2=0.999, epsilon=0.000001).minimize(loss = cost)
     init = tf.global_variables_initializer()
       
@@ -828,54 +712,22 @@ def build_model_Elasticity():
 
             temp_cost = temp_cost/data    
             LOSS_Total.append(temp_cost)
-
-            #u_out_check = sess.run([vel_u],feed_dict={input_points:X_train})
-            #u_final_check = np.power(u_out_check[0],1.0)
-            #v_out_check = sess.run([vel_v],feed_dict={input_points:X_train})
-            #v_final_check = np.power(v_out_check[0],1.0)
-                  
-            #sum = 0  
-            #for index in range(data):
-            #   sum += computeRelativeL2(CFDsolution_u(index),u_final_check,index) 
-            #   sum += computeRelativeL2(CFDsolution_v(index),v_final_check,index) 
-            
-            #relative_u = sum/(2*data)
-     
+  
             print(epoch)
             print(temp_cost)
-            #print(relative_u)
-            
-            #LOSS_Total_u.append(relative_u)
 
             if temp_cost < min_loss:
-            #if relative_u < min_relative_u:
                 u_out = sess.run([vel_u],feed_dict={input_points:X_train}) 
                 v_out = sess.run([vel_v],feed_dict={input_points:X_train}) 
-                #p_out = sess.run([vel_p],feed_dict={input_points:X_train}) 
-                
-                #dp_dx_out = sess.run([vel_dp_dx],feed_dict={input_points:X_train})
-                #dp_dy_out = sess.run([vel_dp_dy],feed_dict={input_points:X_train})
         
                 u_final = np.power(u_out[0],1.0) 
                 v_final = np.power(v_out[0],1.0)
-                #p_final = np.power(p_out[0],1.0)
-                
-                #dp_dx_final = np.power(dp_dx_out[0],1.0)
-                #dp_dy_final = np.power(dp_dy_out[0],1.0) 
 
                 min_loss = temp_cost
-                #min_relative_u = relative_u
                 converge_iteration = epoch
-
-                #temp_cost += temp_cost_m/int(data/Nb)
-                #temp_cost += temp_cost_m/int(data)
-
-            #if min_loss < criteria:
-            #    break 
         
         end_ite = timer()
         
-        plotCost(LOSS_Total_u,'bTotalu ','Total loss u')
         plotCost(LOSS_Total,'bTotal','Total loss')
         
         for index in range(data):
@@ -890,20 +742,16 @@ def build_model_Elasticity():
         #Error Analysis Based on RMSE
         error_u = [] ;
         error_v = [] ;
-        #error_p = [] ;
         
         error_u_rel = [] ;
         error_v_rel = [] ;
-        #error_p_rel = [] ;
-
+        
         for index in range(data):
             error_u.append(computeRMSE(CFDsolution_u(index),u_final,index))
             error_v.append(computeRMSE(CFDsolution_v(index),v_final,index))
-            #error_p.append(computeRMSE(CFDsolution_p(index),p_final,index))
-            
+          
             error_u_rel.append(computeRelativeL2(CFDsolution_u(index),u_final,index))
             error_v_rel.append(computeRelativeL2(CFDsolution_v(index),v_final,index))
-            #error_p_rel.append(computeRelativeL2(CFDsolution_p(index),p_final,index))
          
         for index in range(data):
             print('\n')
@@ -912,16 +760,11 @@ def build_model_Elasticity():
             print(error_u[index])
             print('error_v:')
             print(error_v[index])            
-            #print('error_p:')
-            #print(error_p[index])
             print('error_u_rel:')
             print(error_u_rel[index])
             print('error_v_rel:')
             print(error_v_rel[index])
-            #print('error_p_rel:')
-            #print(error_p_rel[index])                                           
-            #print('\n')     
-    
+      
         print('max RMSE u:')
         print(max(error_u))
         print(error_u.index(max(error_u)))
@@ -939,16 +782,7 @@ def build_model_Elasticity():
         print(error_v.index(min(error_v)))
         
         print('\n')
-        
-        #print('max RMSE p:')
-        #print(max(error_p))
-        #print(error_p.index(max(error_p)))
-        #print('min RMSE p:')
-        #print(min(error_p))
-        #print(error_p.index(min(error_p)))
-
-        print('\n')
- 
+     
         print('max relative u:')
         print(max(error_u_rel))
         print(error_u_rel.index(max(error_u_rel)))
@@ -966,44 +800,15 @@ def build_model_Elasticity():
         print(error_v_rel.index(min(error_v_rel)))
 
         print('\n')
-
-        #print('max relative p:')
-        #print(max(error_p_rel))
-        #print(error_p_rel.index(max(error_p_rel)))
-        #print('min relative p:')
-        #print(min(error_p_rel))
-        #print(error_p_rel.index(min(error_p_rel)))
-
-        print('\n')
-
-        #print('average RMSE u:')
-        #print(sum(error_u)/len(error_u))
-        #print('\n')
-        #print('average RMSE v:')
-        #print(sum(error_v)/len(error_v))
-        
-        #print('\n')
-        
-        #print('average RMSE p:')
-        #print(sum(error_p)/len(error_p))
-       
-        print('\n')
         
         print('average relative u:')
-        #print(sum(error_u_rel)/len(error_u_rel))
         print(sum(error_u_rel)/data)
 
         print('\n')
 
         print('average relative v:')
-        #print(sum(error_v_rel)/len(error_v_rel))
         print(sum(error_v_rel)/data)
 
-        print('\n')
-
-        #print('average relative p:')
-        #print(sum(error_p_rel)/len(error_p_rel))
-                
         print('\n')
 
         print('converge iteration:')
