@@ -570,6 +570,38 @@ pose_interior = tf.placeholder(tf.int32, None) #Taken from truth
 pose_BC_p = tf.placeholder(tf.int32, None) #Taken from prediction
 pose_sparse_p = tf.placeholder(tf.int32, None) #Taken from prediction
 pose_interior_p = tf.placeholder(tf.int32, None) #Taken from prediction
+
+def ComputeCost_PDE(X,Y):
+
+    u_in = tf.gather(tf.reshape(Y[0][:,:,0],[-1]),pose_interior_p)
+    v_in = tf.gather(tf.reshape(Y[0][:,:,1],[-1]),pose_interior_p)
+    du_dx_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,0], X)[0][:,:,0],[-1]),pose_interior_p) #du/dx in domain
+    d2u_dx2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,0], X)[0][:,:,0], X)[0][:,:,0],[-1]),pose_interior_p) #d2u/dx2 in domain
+    du_dy_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,0], X)[0][:,:,1],[-1]),pose_interior_p) #du/dy in domain
+    d2u_dy2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,0], X)[0][:,:,1], X)[0][:,:,1], [-1]),pose_interior_p) #d2u/dy2 in domain
+    dv_dx_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,1], X)[0][:,:,0],[-1]),pose_interior_p) #dv/dx in domain
+    d2v_dx2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,0], X)[0][:,:,0], [-1]),pose_interior_p) #d2v/dx2 in domain
+    dv_dy_in =  tf.gather(tf.reshape(backend.gradients(Y[0][:,:,1], X)[0][:,:,1],[-1]),pose_interior_p) #dv/dy in domain
+    d2v_dy2_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,1], X)[0][:,:,1], [-1]),pose_interior_p) #d2v/dy2 in domain
+        
+    dv_dx_dy_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,1], X)[0][:,:,0], X)[0][:,:,1], [-1]),pose_interior_p)
+    du_dx_dy_in = tf.gather(tf.reshape(backend.gradients(backend.gradients(Y[0][:,:,0], X)[0][:,:,0], X)[0][:,:,1], [-1]),pose_interior_p)
+
+    dT_dx_truth = tf.gather(fire_dTdx, pose_interior) 
+    dT_dx_truth = tf.cast(dT_dx_truth, dtype='float32')
+
+    dT_dy_truth = tf.gather(fire_dTdy, pose_interior) 
+    dT_dy_truth = tf.cast(dT_dy_truth, dtype='float32')
+
+    fx_in = -E*alpha/(1-nu)*dT_dx_truth
+    fy_in = -E*alpha/(1-nu)*dT_dy_truth
+
+    r1 = (-c11*d2u_dx2_in - c12*dv_dx_dy_in - c66*d2u_dy2_in - c66*dv_dx_dy_in) + (fx_in)
+    r2 = (-c66*du_dx_dy_in - c66*d2v_dx2_in - c12*du_dx_dy_in - c22*d2v_dy2_in) + (fy_in)
+
+    pde_loss = tf.reduce_mean(tf.square(r1)+tf.square(r2))
+    
+    return (1.0*pde_loss)
     
 def ComputeCost_SE(X,Y):
 
@@ -626,16 +658,16 @@ def ComputeCost_SE(X,Y):
 def build_model_Elasticity():
     
     LOSS_Total = []
-    LOSS_Total_u = []
+    LOSS_PDE = []
     min_loss = 1000
-    min_relative_u = 1000
     converge_iteration = 0
     criteria = J_Loss
 
-    cost = ComputeCost_SE(model.inputs,model.outputs)    
+    cost = ComputeCost_SE(model.inputs,model.outputs)
+    PDEcost = ComputeCost_PDE(model.inputs,model.outputs)     
     vel_u = compute_u(model.outputs)
     vel_v = compute_v(model.outputs)
-    
+
     u_final = np.zeros((data,num_points),dtype=float)
     v_final = np.zeros((data,num_points),dtype=float)
    
@@ -651,6 +683,7 @@ def build_model_Elasticity():
         for epoch in range(Np):
         
             temp_cost = 0
+            PDE_cost = 0
             arr = np.arange(data)
             np.random.shuffle(arr)
             for sb in range(int(data/Nb)):
@@ -704,9 +737,10 @@ def build_model_Elasticity():
 
                 w0 = weight[epoch]
                 
-                gr, temp_cost_m, gr1, gr2, gr3, gr4, gr5, gr6, gr7 = sess.run([optimizer, cost, pose_BC, pose_sparse, pose_interior, pose_BC_p, pose_sparse_p, pose_interior_p, pose_weight], feed_dict={input_points:X_train_mini, pose_BC:group_BC, pose_sparse:group_sparse, pose_interior:group_interior, pose_BC_p:group_BC_p, pose_sparse_p:group_sparse_p, pose_interior_p:group_interior_p, pose_weight:w0})
+                gr, temp_cost_m, PDE_cost_m, gr1, gr2, gr3, gr4, gr5, gr6, gr7 = sess.run([optimizer, cost, PDEcost pose_BC, pose_sparse, pose_interior, pose_BC_p, pose_sparse_p, pose_interior_p, pose_weight], feed_dict={input_points:X_train_mini, pose_BC:group_BC, pose_sparse:group_sparse, pose_interior:group_interior, pose_BC_p:group_BC_p, pose_sparse_p:group_sparse_p, pose_interior_p:group_interior_p, pose_weight:w0})
                 
-                temp_cost += temp_cost_m
+                temp_cost += (temp_cost_m/int(data/Nb))
+                PDE_cost += (PDE_cost_m/int(data/Nb))
 
                 if math.isnan(temp_cost_m):
                     print('Nan Value\n')
@@ -714,9 +748,11 @@ def build_model_Elasticity():
 
             temp_cost = temp_cost/data    
             LOSS_Total.append(temp_cost)
+            LOSS_PDE.append(PDE_cost)
   
             print(epoch)
-            print(temp_cost)
+            print(PDE_cost)
+            #print(temp_cost)
 
             if temp_cost < min_loss:
                 u_out = sess.run([vel_u],feed_dict={input_points:X_train}) 
@@ -837,5 +873,10 @@ def build_model_Elasticity():
         with open('bTotalLoss.txt', 'w') as fp:
             for i in range(len(LOSS_Total)):
                 fp.write(str(i) + '  ' + str(LOSS_Total[i]) + '\n')
+                
+        with open('bPDELoss.txt', 'w') as fpp:
+            for i in range(len(LOSS_PDE)):
+                fpp.write(str(i) + '  ' + str(LOSS_PDE[i]) + '\n')
+
                 
 build_model_Elasticity()
