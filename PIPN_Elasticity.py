@@ -40,15 +40,13 @@ from tensorflow import keras
 variation = 3
 var_ori = 2
 data_square = int(variation*int(360/4)/var_ori) - 1  # 90
-data_triangle = int(variation*int(360/3)/var_ori)    # 120
 data_pentagon = int(variation*int(360/5)/var_ori) -1 # 72
 data_heptagon = int(variation*int(360/7)/var_ori)    # 51
 data_octagon = int(variation*int(360/8)/var_ori) - 1 # 45
 data_nonagon = int(variation*int(360/9)/var_ori) - 1 # 40
 data_hexagon = int(variation*int(360/6)/var_ori)     # 60
 
-#always, without triangle
-#total is now 536
+#total data is 536
 # 536 - 4, becomes 532 = 2*2*7*19
 
 #number of domains
@@ -67,8 +65,8 @@ interior_list = [] #interior nodes without full, BC, sparse
 J_Loss = 0.00001
 LR = 0.0003 #learning rate
 Np = 3000 #5000 #Number of epochs
-Nb = 19 # 2,4,7,14,19,28,38 #batch size, note: Nb should be less than data
-Ns = 0.125 # 4,2,1,0.5,0.25,0.125 scaling the network
+Nb = 28 # 2,4,7,14,19,28,38 #batch size, note: Nb should be less than data
+Ns = 1.0 # 4,2,1,0.5,0.25,0.125 scaling the network
 pointer = np.zeros(shape=[Nb],dtype=int) #to save indices of batch numbers
 
 #Material-properties (plane stress)
