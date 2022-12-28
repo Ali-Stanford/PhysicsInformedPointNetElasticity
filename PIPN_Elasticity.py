@@ -28,7 +28,6 @@ from tensorflow.python.keras import optimizers
 from tensorflow.python.keras.layers import Input
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dense, Reshape
-#from tensorflow.python.keras.layers import BatchNormalization
 from tensorflow.python.keras.layers import Convolution1D, MaxPooling1D, AveragePooling1D
 from tensorflow.python.keras.layers import Lambda, concatenate
 from tensorflow.python.keras import initializers
@@ -518,17 +517,12 @@ def CFDsolution_v(index):
 #PointNet
 input_points = Input(shape=(num_points, Nd))
 g = Convolution1D(int(64*Ns), 1, input_shape=(num_points, Nd), activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(input_points) # I made 3 to 1
-#g = BatchNormalization()(g)
 g = Convolution1D(int(64*Ns), 1, input_shape=(num_points, Nd), activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(g) #I made 3 to 1 be
-#g = BatchNormalization()(g)
 
 seg_part1 = g
 g = Convolution1D(int(64*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(g)
-#g = BatchNormalization()(g)
 g = Convolution1D(int(128*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(g)
-#g = BatchNormalization()(g)
 g = Convolution1D(int(1024*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(g)
-#g = BatchNormalization()(g)
 
 # global_feature
 global_feature = MaxPooling1D(pool_size=num_points)(g)
@@ -538,13 +532,9 @@ global_feature = Lambda(exp_dim, arguments={'num_points': num_points})(global_fe
 # point_net_seg
 c = concatenate([seg_part1, global_feature])
 c = Convolution1D(int(512*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
-#c = BatchNormalization()(c)
 c = Convolution1D(int(256*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
-#c = BatchNormalization()(c)
 c = Convolution1D(int(128*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
-#c = BatchNormalization()(c)
 c = Convolution1D(int(128*Ns), 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
-#c = BatchNormalization()(c)
 prediction = Convolution1D(category, 1, activation='tanh',kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros())(c)
 model = Model(inputs=input_points, outputs=prediction)
 
