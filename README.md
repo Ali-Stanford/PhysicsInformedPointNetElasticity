@@ -9,6 +9,12 @@ If you use the code, plesae cite the following journal papers: <br>
 
 1. **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://arxiv.org/pdf/2303.13634.pdf)**
 
+@article{kashefi2023PIPNelasticity, <br>
+title={Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity}, <br>
+  author={Kashefi, Ali and Mukerji, Tapan}, <br>
+  journal={arXiv preprint arXiv:2303.13634}, <br>
+  year={2023}} <br>
+
 2. **[Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries](https://doi.org/10.1016/j.jcp.2022.111510)**
 
 @article{Kashefi2022PIPN, <br>
