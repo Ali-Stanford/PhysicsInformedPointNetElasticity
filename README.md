@@ -11,7 +11,7 @@ If you use the code, plesae cite the following journal papers: <br>
 
 @article{kashefi2023PIPNelasticity, <br>
 title={Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity}, <br>
-  author={Kashefi, Ali and Mukerji, Tapan}, <br>
+  author={Kashefi, Ali and Guibas, Leonidas and Mukerji, Tapan}, <br>
   journal={arXiv preprint arXiv:2303.13634}, <br>
   year={2023}} <br>
 
