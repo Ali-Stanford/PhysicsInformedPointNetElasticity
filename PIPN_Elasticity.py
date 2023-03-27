@@ -1,6 +1,15 @@
-#In the Name of God
-#Author: Ali Kashefi
-#Physics-Informed PointNet for Linear Elasticity
+##### In The Name of God #####
+##### Physics-informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity on multiple sets of irregular geometries #####
+
+#Author: Ali Kashefi (kashefi@stanford.edu)
+
+#@article{kashefi2023PIPNelasticity,
+# title={Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity},
+# author={Kashefi, Ali and Guibas, Leonidas and Mukerji, Tapan},
+# journal={arXiv preprint arXiv:2303.13634},
+# year={2023}}
+
+#Version: 1.0
 
 #Import Libraries
 import os
