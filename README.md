@@ -1,4 +1,4 @@
-# Physics-Informed PointNet (PIPN) for Linear Elasticity on A Bunch of Irregular Geometries
+# Physics-Informed PointNet (PIPN) for Linear Elasticity
 
 **Author:** Ali Kashefi (kashefi@stanford.edu)<br>
 **Description:** Implementation of physics-informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity (plane stress) on multiple sets of irregular geometries <br>
@@ -7,7 +7,7 @@
 **Citation** <br>
 If you use the code, plesae cite the following journal papers: <br>
 
-1.
+1. **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://arxiv.org/pdf/2303.13634.pdf)**
 
 2. **[Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries](https://doi.org/10.1016/j.jcp.2022.111510)**
 
@@ -20,6 +20,9 @@ year = {2022}, <br>
 issn = {0021-9991}, <br>
 author = {Ali Kashefi and Tapan Mukerji}} <br>
 
+**Abstract** <br>
+
+Regular physics-informed neural networks (PINNs) predict the solution of partial differential equations using sparse labeled data but only over a single domain. On the other hand, fully supervised learning models are first trained usually over a few thousand domains with known solutions (i.e., labeled data) and then predict the solution over a few hundred unseen domains. Physics-informed PointNet (PIPN) is primarily designed to fill this gap between PINNs (as weakly supervised learning models) and fully supervised learning models. In this article, we demonstrate that PIPN predicts the solution of desired partial differential equations over a few hundred domains simultaneously, while it only uses sparse labeled data. This framework benefits fast geometric designs in the industry when only sparse labeled data are available. Particularly, we show that PIPN predicts the solution of a plane stress problem over more than 500 domains with different geometries, simultaneously. Moreover, we pioneer implementing the concept of remarkable batch size (i.e., the number of geometries fed into PIPN at each sub-epoch) into PIPN. Specifically, we try batch sizes of 7, 14, 19, 38, 76, and 133. Additionally, the effect of the PIPN size, symmetric function in the PIPN architecture, and static and dynamic weights for the component of the sparse labeled data in the loss function are investigated.
 
 **Physics-informed PointNet on Wikipedia** <br>
 A general description of physics-informed neural networks (PINNs) and its other versions such as PIPN can be found in the following Wikipedia page:<br>
