@@ -1,7 +1,7 @@
 # Physics-Informed PointNet (PIPN) for Linear Elasticity
 
 **Author:** Ali Kashefi (kashefi@stanford.edu)<br>
-**Description:** Implementation of physics-informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity (plane stress) on multiple sets of irregular geometries <br>
+**Description:** Implementation of Physics-Informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity (plane stress) on multiple sets of irregular geometries <br>
 **Version:** 1.0 <br>
 
 **Citation** <br>
