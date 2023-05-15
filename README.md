@@ -1,5 +1,6 @@
 # Physics-Informed PointNet (PIPN) for Linear Elasticity
 ![pic](./Figure2-1.png)
+<br>
 ![pic](./Figure1-1.png)
 
 **Author:** Ali Kashefi (kashefi@stanford.edu)<br>
