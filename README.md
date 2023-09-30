@@ -1,5 +1,5 @@
 # Physics-Informed PointNet (PIPN) for Linear Elasticity
-![pic](./Figure2-1.png) <br>
+![pic](./pinn_elasticity.png) <br>
 
 ![pic](./Figure1-1.png) <br>
 
