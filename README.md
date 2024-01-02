@@ -13,7 +13,7 @@ If you use the code, please cite the following journal papers: <br>
 <b>#1</b> **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://arxiv.org/pdf/2303.13634.pdf)**
 
     @article{kashefi2023PIPNelasticity,
-      author={Ali Kashefi and Leonidas J.  Guibas and Tapan  Mukerji},
+      author={Ali Kashefi and Leonidas J. Guibas and Tapan Mukerji},
       title={PHYSICS-INFORMED POINTNET: ON HOW MANY IRREGULAR GEOMETRIES CAN IT SOLVE AN INVERSE PROBLEM SIMULTANEOUSLY? APPLICATION TO LINEAR ELASTICITY},
       journal={Journal of Machine Learning for Modeling and Computing},
       issn={2689-3967},
