@@ -8,7 +8,7 @@
 **Version:** 1.0 <br>
       
 **Citations** <br>
-If you use the code, plesae cite the following journal papers: <br>
+If you use the code, please cite the following journal papers: <br>
 
 <b>#1</b> **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://arxiv.org/pdf/2303.13634.pdf)**
 
@@ -34,14 +34,14 @@ If you use the code, plesae cite the following journal papers: <br>
       
 **Abstract** <br>
 
-Regular physics-informed neural networks (PINNs) predict the solution of partial differential equations using sparse labeled data but only over a single domain. On the other hand, fully supervised learning models are first trained usually over a few thousand domains with known solutions (i.e., labeled data) and then predict the solution over a few hundred unseen domains. Physics-informed PointNet (PIPN) is primarily designed to fill this gap between PINNs (as weakly supervised learning models) and fully supervised learning models. In this article, we demonstrate that PIPN predicts the solution of desired partial differential equations over a few hundred domains simultaneously, while it only uses sparse labeled data. This framework benefits fast geometric designs in the industry when only sparse labeled data are available. Particularly, we show that PIPN predicts the solution of a plane stress problem over more than 500 domains with different geometries, simultaneously. Moreover, we pioneer implementing the concept of remarkable batch size (i.e., the number of geometries fed into PIPN at each sub-epoch) into PIPN. Specifically, we try batch sizes of 7, 14, 19, 38, 76, and 133. Additionally, the effect of the PIPN size, symmetric function in the PIPN architecture, and static and dynamic weights for the component of the sparse labeled data in the loss function are investigated.
+Regular physics-informed neural networks (PINNs) predict the solution of partial differential equations using sparse labeled data but only over a single domain. On the other hand, fully supervised learning models are first trained usually over a few thousand domains with known solutions (i.e., labeled data), and then predict the solution over a few hundred unseen domains. Physics-informed PointNet (PIPN) is primarily designed to fill this gap between PINNs (as weakly supervised learning models) and fully supervised learning models. In this article, we demonstrate that PIPN predicts the solution of desired partial differential equations over a few hundred domains simultaneously, while it only uses sparse labeled data. This framework benefits fast geometric designs in the industry when only sparse labeled data are available. Particularly, we show that PIPN predicts the solution of a plane stress problem over more than 500 domains with different geometries, simultaneously. Moreover, we pioneer implementing the concept of remarkable batch size (i.e., the number of geometries fed into PIPN at each sub-epoch) into PIPN. Specifically, we try batch sizes of 7, 14, 19, 38, 76, and 133. Additionally, the effect of the PIPN size, symmetric function in the PIPN architecture, and static and dynamic weights for the component of the sparse labeled data in the loss function are investigated.
 
 **Physics-informed PointNet on Wikipedia** <br>
-A general description of physics-informed neural networks (PINNs) and its other versions such as PIPN can be found in the following Wikipedia page:<br>
+A general description of physics-informed neural networks (PINNs) and their other versions such as PIPN can be found on the following Wikipedia page:<br>
 [Physics-informed PointNet (PIPN) for multiple sets of irregular geometries](https://en.wikipedia.org/wiki/Physics-informed_neural_networks#Physics-informed_PointNet_(PIPN)_for_multiple_sets_of_irregular_geometries)
 
 **Physics-informed PointNet Presentation in Machine Learning + X seminar 2022 at Brown University**<br>
-In case of your interest, you might watch the recorded machine learning seminar with the topic of PIPN at Brown University using the following link:<br> 
+In case you are interested, you might watch the recorded machine learning seminar with the topic of PIPN at Brown University using the following link:<br> 
 [Video Presentation of PIPN at Brown University](https://www.dropbox.com/s/oafbjl6xaihotqa/GMT20220325-155140_Recording_2560x1440.mp4?dl=0) <br>
 [YouTube Video](https://www.youtube.com/watch?v=faeHARnPSVE)
 
