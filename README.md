@@ -10,7 +10,7 @@
 **Citations** <br>
 If you use the code, please cite the following journal papers: <br>
 
-<b>#1</b> **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://doi.org/ 10.1615/JMachLearnModelComput.2023050011)**
+<b>#1</b> **[Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity](https://doi.org/10.1615/JMachLearnModelComput.2023050011)**
 
     @article{kashefi2023PIPNelasticity,
       author={Ali Kashefi and Leonidas J. Guibas and Tapan Mukerji},
