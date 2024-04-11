@@ -2,7 +2,6 @@
 ##### Physics-informed PointNet (PIPN) for weakly-supervised learning of 2D linear elasticity on multiple sets of irregular geometries #####
 
 #Author: Ali Kashefi (kashefi@stanford.edu)
-#The first author would like to thank Prof. Gege Wen at Imperial College London for her helpful guidance and discussion on the software engineering aspects of this study.
 
 #Citations:
 #If you use the code, please cite the following journal papers:
