@@ -6,11 +6,16 @@
 #Citations:
 #If you use the code, please cite the following journal papers:
 
+
 #@article{kashefi2023PIPNelasticity,
-# title={Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity},
-# author={Kashefi, Ali and Guibas, Leonidas and Mukerji, Tapan},
-# journal={arXiv preprint arXiv:2303.13634},
-# year={2023}}
+#  title={Physics-informed PointNet: On how many irregular geometries can it solve an inverse problem simultaneously? Application to linear elasticity},
+#  author={Kashefi, Ali and Guibas, Leonidas J and Mukerji, Tapan},
+#  journal={Journal of Machine Learning for Modeling and Computing},
+#  volume={4},
+#  number={4},
+#  year={2023},
+#  publisher={Begel House Inc.}}
+
 
 #@article{Kashefi2022PIPN, 
 #title = {Physics-informed PointNet: A deep learning solver for steady-state incompressible flows and thermal fields on multiple sets of irregular geometries}, 
